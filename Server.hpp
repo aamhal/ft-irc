@@ -56,7 +56,7 @@ public:
 	void AddClient(Client newClient);
 	void AddFds(pollfd newFd);
 	void set_username(std::string& username, int fd);
-	void set_nickname(std::string cmd, int fd);
+	void set_nickname(int fd, std::string cmd);
 	//---------------//Remove Methods
 	void RemoveClient(int fd);
 	void RemoveChannel(std::string name);
@@ -78,7 +78,7 @@ public:
 	std::vector<std::string> split_cmd(std::string &str);
 	void parse_exec_cmd(std::string &cmd, int fd);
 	//---------------//Authentification Methods
-	bool BypassForBot(std::string cmd, int fd);
+	bool BypassForBot( int fd, std::string cmd);
 	bool notregistered(int fd);
 	bool nickNameInUse(std::string& nickname);
 	bool is_validNickname(std::string& nickname);

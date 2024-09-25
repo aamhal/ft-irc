@@ -38,3 +38,4 @@ void Client::setIpAdd(std::string ipadd){this->ipadd = ipadd;}
 //---------------//Methods
 void Client::clearBuffer(){buffer.clear();}
 bool Client::GetLogedIn(){return this->logedin;}
+
