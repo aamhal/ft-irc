@@ -32,40 +32,40 @@ class Channel;
 class Server
 {
 private:
-	int port;
 	int server_fdsocket;
-	static bool Signal;
-	std::string password;
-	std::vector<Client> clients;
-	std::vector<struct pollfd> fds;
-	struct sockaddr_in add;
-	struct sockaddr_in cliadd;
-	struct pollfd new_cli;
 	std::vector<Channel> channels;
+	struct sockaddr_in cliadd;
+	struct sockaddr_in add;
+	struct pollfd new_cli;
+	std::vector<struct pollfd> fds;
+	std::vector<Client> clients;
+	int my_port;
+	std::string password;
+	static bool Signal;
 public:
 	Server();
 	~Server();
 	//---------------//Getters
-	static bool isBotfull;
+	Client *GetClientNick(std::string nickname);
 	int GetFd();
 	int GetPort();
 	std::string GetPassword();
 	Client *GetClient(int fd);
-	Client *GetClientNick(std::string nickname);
-	Channel *GetChannel(std::string name);
+	Channel *GetChannel(std::string name);      
+	static bool isBotfull;
 	//---------------//Setters
-	void SetFd(int server_fdsocket);
-	void AddChannel(Channel newChannel);
 	void SetPort(int port);
-	void SetPassword(std::string password);
+	void set_nickname(int fd, std::string cmd);
+	void set_username(std::string& username, int fd);
+	void AddChannel(Channel newChannel);
 	void AddClient(Client newClient);
 	void AddFds(pollfd newFd);
-	void set_username(std::string& username, int fd);
-	void set_nickname(int fd, std::string cmd);
+	void SetFd(int server_fdsocket);
+	void SetPassword(std::string password);
 	//---------------//Remove Methods
-	void RemoveChannel(std::string name);
-	void RemoveClient(int fd);
 	void RemoveFds(int fd);
+	void RemoveClient(int fd);
+	void RemoveChannel(std::string name);
 	//---------------//Send Methods
 	void senderror(int code, std::string clientname, int fd, std::string msg);
 	void senderror(int code, std::string clientname, std::string channelname, int fd, std::string msg);
@@ -75,36 +75,25 @@ public:
 	void close_fds();
 	//---------------//Server Methods
 	void init(int port, std::string pass);
-	void accept_new_client();
 	void set_sever_socket();
 	void reciveNewData(int fd);
+	void accept_new_client();
 	//---------------//Parsing Methods
-	std::vector<std::string> split_recivedBuffer(std::string str);
-	std::vector<std::string> split_cmd(std::string &str);
 	void parse_exec_cmd(std::string &cmd, int fd);
+	std::vector<std::string> split_cmd(std::string &str);
+	std::vector<std::string> split_recivedBuffer(std::string str);
 	//---------------//Authentification Methods
+	void client_authen(int fd, std::string pass);
+	bool is_validNickname(std::string& nickname);
+	bool nickNameInUse(std::string& nickname);
 	bool BypassForBot( int fd, std::string cmd);
 	bool notregistered(int fd);
-	bool nickNameInUse(std::string& nickname);
-	bool is_validNickname(std::string& nickname);
-	void client_authen(int fd, std::string pass);
 	//----------------// JOIN 
+	int		Split_cmd_join(std::vector<std::pair<std::string, std::string> > &token, std::string cmd, int fd);
+	int		Client_Finder(std::string nickname);
+	void	Found_Chennel(std::vector<std::pair<std::string, std::string> >&token, int i, int j, int fd);
+	void	NotFound_Chennel(std::vector<std::pair<std::string, std::string> >&token, int i, int fd);
 	void	JOIN(std::string cmd, int fd);
-	int		SplitJoin(std::vector<std::pair<std::string, std::string> > &token, std::string cmd, int fd);
-	void	ExistCh(std::vector<std::pair<std::string, std::string> >&token, int i, int j, int fd);
-	void	NotExistCh(std::vector<std::pair<std::string, std::string> >&token, int i, int fd);
-	int		SearchForClients(std::string nickname);
 	// --------------// Invite
 	void Invite(std::string &cmd, int &fd);
-	//---------------------------//MODE CMD
-	void 		mode_command(std::string& cmd, int fd);
-	std::string invite_only(Channel *channel, char signe, std::string chain);
-	std::string topic_restriction(Channel *channel ,char signe, std::string chain);
-	std::string password_mode(std::vector<std::string> splited, Channel *channel, size_t &pos, char signe, int fd, std::string chain, std::string& arguments);
-	std::string signe_privilege(std::vector<std::string> splited, Channel *channel, size_t& pos, int fd, char signe, std::string chain, std::string& arguments);
-	std::string channel_limit(std::vector<std::string> splited, Channel *channel, size_t &pos, char signe, int fd, std::string chain, std::string& arguments);
-	bool		isvalid_limit(std::string& limit);
-	std::string mode_toAppend(std::string chain, char signe, char mode);
-	std::vector<std::string> splitParams(std::string params);
-	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);
 };

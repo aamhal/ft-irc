@@ -2,9 +2,9 @@
 #include "Client.hpp"
 #include "Replies.hpp"
 
-bool isPortValid(std::string port){
-	return (port.find_first_not_of("0123456789") == std::string::npos && \
-	std::atoi(port.c_str()) >= 1024 && std::atoi(port.c_str()) <= 65535);
+bool isPortValid(std::string my_port){
+	return (my_port.find_first_not_of("0123456789") == std::string::npos && \
+	std::atoi(my_port.c_str()) >= 1024 && std::atoi(my_port.c_str()) <= 65535);
 }
 
 int main(int ac, char **av)

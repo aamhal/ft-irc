@@ -5,7 +5,7 @@ Server::Server(){this->server_fdsocket = -1;}
 Server::~Server(){}
 
 //---------------//Getters
-int Server::GetPort(){return this->port;}
+int Server::GetPort(){return this->my_port;}
 int Server::GetFd(){return this->server_fdsocket;}
 Client *Server::GetClient(int fd){
 	for (size_t i = 0; i < this->clients.size(); i++){
@@ -35,7 +35,7 @@ Channel *Server::GetChannel(std::string name)
 //---------------//Setters
 void Server::AddChannel(Channel newChannel){this->channels.push_back(newChannel);}
 void Server::SetFd(int fd){this->server_fdsocket = fd;}
-void Server::SetPort(int port){this->port = port;}
+void Server::SetPort(int port){this->my_port = port;}
 void Server::SetPassword(std::string password){this->password = password;}
 std::string Server::GetPassword(){return this->password;}
 void Server::AddClient(Client newClient){this->clients.push_back(newClient);}
@@ -112,7 +112,7 @@ void	Server::close_fds(){
 void Server::init(int port, std::string pass)
 {
 	this->password = pass;
-	this->port = port;
+	this->my_port = port;
 	this->set_sever_socket();
 
 	std::cout << GRE << "Server <" << server_fdsocket << "> Connected" << WHI << std::endl;
@@ -140,7 +140,7 @@ void Server::set_sever_socket()
 	int en = 1;
 	add.sin_family = AF_INET;
 	add.sin_addr.s_addr = INADDR_ANY;
-	add.sin_port = htons(port);
+	add.sin_port = htons(my_port);
 	server_fdsocket = socket(AF_INET, SOCK_STREAM, 0);
 	if(server_fdsocket == -1)
 		throw(std::runtime_error("faild to create socket"));
@@ -178,6 +178,18 @@ void Server::accept_new_client()
 	std::cout << GRE << "Client <" << incofd << "> Connected" << WHI << std::endl;
 }
 
+std::vector<std::string> Server::split_cmd(std::string& cmd)
+{
+	std::vector<std::string> vec;
+	std::istringstream stm(cmd);
+	std::string token;
+	while(stm >> token)
+	{
+		vec.push_back(token);
+		token.clear();
+	}
+	return vec;
+}
 void Server::reciveNewData(int fd)
 {
 	std::vector<std::string> cmd;
@@ -220,26 +232,14 @@ std::vector<std::string> Server::split_recivedBuffer(std::string str)
 	}
 	return vec;
 }
-
-std::vector<std::string> Server::split_cmd(std::string& cmd)
-{
-	std::vector<std::string> vec;
-	std::istringstream stm(cmd);
-	std::string token;
-	while(stm >> token)
-	{
-		vec.push_back(token);
-		token.clear();
-	}
-	return vec;
-}
-
 bool Server::notregistered(int fd)
 {
 	if (!GetClient(fd) || GetClient(fd)->GetNickName().empty() || GetClient(fd)->GetUserName().empty() || GetClient(fd)->GetNickName() == "*"  || !GetClient(fd)->GetLogedIn())
 		return false;
 	return true;
 }
+
+
 
 void Server::parse_exec_cmd(std::string &cmd, int fd)
 {
@@ -259,8 +259,6 @@ void Server::parse_exec_cmd(std::string &cmd, int fd)
 		JOIN(cmd, fd);
 	else if(splited_cmd.size() && (splited_cmd[0] == "INVITE" || splited_cmd[0] == "invite"))
 		Invite(cmd, fd);
-	else if(splited_cmd.size() && (splited_cmd[0] == "MODE" || splited_cmd[0] == "mode"))
-		mode_command(cmd, fd);
 	else 
     {
         std::cout << "Command not found" << std::endl;
