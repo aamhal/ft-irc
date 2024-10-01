@@ -18,6 +18,7 @@
 #include <ctime>
 #include "Client.hpp"
 #include "Replies.hpp"
+#include "Channel.hpp"
 
 
 #define RED "\e[1;31m"
@@ -26,6 +27,7 @@
 #define YEL "\e[1;33m"
 
 class Client;
+class Channel;
 
 class Server
 {
@@ -39,6 +41,7 @@ private:
 	struct sockaddr_in add;
 	struct sockaddr_in cliadd;
 	struct pollfd new_cli;
+	std::vector<Channel> channels;
 public:
 	Server();
 	~Server();
@@ -49,8 +52,10 @@ public:
 	std::string GetPassword();
 	Client *GetClient(int fd);
 	Client *GetClientNick(std::string nickname);
+	Channel *GetChannel(std::string name);
 	//---------------//Setters
 	void SetFd(int server_fdsocket);
+	void AddChannel(Channel newChannel);
 	void SetPort(int port);
 	void SetPassword(std::string password);
 	void AddClient(Client newClient);
@@ -58,8 +63,8 @@ public:
 	void set_username(std::string& username, int fd);
 	void set_nickname(int fd, std::string cmd);
 	//---------------//Remove Methods
-	void RemoveClient(int fd);
 	void RemoveChannel(std::string name);
+	void RemoveClient(int fd);
 	void RemoveFds(int fd);
 	//---------------//Send Methods
 	void senderror(int code, std::string clientname, int fd, std::string msg);
@@ -83,5 +88,23 @@ public:
 	bool nickNameInUse(std::string& nickname);
 	bool is_validNickname(std::string& nickname);
 	void client_authen(int fd, std::string pass);
-
+	//----------------// JOIN 
+	void	JOIN(std::string cmd, int fd);
+	int		SplitJoin(std::vector<std::pair<std::string, std::string> > &token, std::string cmd, int fd);
+	void	ExistCh(std::vector<std::pair<std::string, std::string> >&token, int i, int j, int fd);
+	void	NotExistCh(std::vector<std::pair<std::string, std::string> >&token, int i, int fd);
+	int		SearchForClients(std::string nickname);
+	// --------------// Invite
+	void Invite(std::string &cmd, int &fd);
+	//---------------------------//MODE CMD
+	void 		mode_command(std::string& cmd, int fd);
+	std::string invite_only(Channel *channel, char signe, std::string chain);
+	std::string topic_restriction(Channel *channel ,char signe, std::string chain);
+	std::string password_mode(std::vector<std::string> splited, Channel *channel, size_t &pos, char signe, int fd, std::string chain, std::string& arguments);
+	std::string signe_privilege(std::vector<std::string> splited, Channel *channel, size_t& pos, int fd, char signe, std::string chain, std::string& arguments);
+	std::string channel_limit(std::vector<std::string> splited, Channel *channel, size_t &pos, char signe, int fd, std::string chain, std::string& arguments);
+	bool		isvalid_limit(std::string& limit);
+	std::string mode_toAppend(std::string chain, char signe, char mode);
+	std::vector<std::string> splitParams(std::string params);
+	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);
 };

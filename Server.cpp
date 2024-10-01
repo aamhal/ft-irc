@@ -21,9 +21,19 @@ Client *Server::GetClientNick(std::string nickname){
 	}
 	return NULL;
 }
+Channel *Server::GetChannel(std::string name)
+{
+	for (size_t i = 0; i < this->channels.size(); i++){
+		if (this->channels[i].GetName() == name)
+			return &channels[i];
+	}
+	return NULL;
+}
+
 
 //---------------//Getters
 //---------------//Setters
+void Server::AddChannel(Channel newChannel){this->channels.push_back(newChannel);}
 void Server::SetFd(int fd){this->server_fdsocket = fd;}
 void Server::SetPort(int port){this->port = port;}
 void Server::SetPassword(std::string password){this->password = password;}
@@ -38,6 +48,13 @@ void Server::RemoveClient(int fd){
 			{this->clients.erase(this->clients.begin() + i); return;}
 	}
 }
+void Server::RemoveChannel(std::string name){
+	for (size_t i = 0; i < this->channels.size(); i++){
+		if (this->channels[i].GetName() == name)
+			{this->channels.erase(this->channels.begin() + i); return;}
+	}
+}
+
 void Server::RemoveFds(int fd){
 	for (size_t i = 0; i < this->fds.size(); i++){
 		if (this->fds[i].fd == fd)
@@ -234,10 +251,16 @@ void Server::parse_exec_cmd(std::string &cmd, int fd)
 		cmd = cmd.substr(found);
     if(splited_cmd.size() && (splited_cmd[0] == "PASS" || splited_cmd[0] == "pass"))
         client_authen(fd, cmd);
-    if(splited_cmd.size() && (splited_cmd[0] == "NICK" || splited_cmd[0] == "nick"))
+    else if(splited_cmd.size() && (splited_cmd[0] == "NICK" || splited_cmd[0] == "nick"))
         set_nickname(fd, cmd);
 	else if(splited_cmd.size() && (splited_cmd[0] == "USER" || splited_cmd[0] == "user"))
 		set_username(cmd, fd);
+	else if(splited_cmd.size() && (splited_cmd[0] == "JOIN" || splited_cmd[0] == "join"))
+		JOIN(cmd, fd);
+	else if(splited_cmd.size() && (splited_cmd[0] == "INVITE" || splited_cmd[0] == "invite"))
+		Invite(cmd, fd);
+	else if(splited_cmd.size() && (splited_cmd[0] == "MODE" || splited_cmd[0] == "mode"))
+		mode_command(cmd, fd);
 	else 
     {
         std::cout << "Command not found" << std::endl;

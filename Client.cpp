@@ -15,6 +15,13 @@ Client::Client(std::string nickname, std::string username, int fd) :fd(fd), nick
 Client::~Client(){}
 
 //---------------//Getters
+bool Client::GetInviteChannel(std::string &ChName){
+	for (size_t i = 0; i < this->ChannelsInvite.size(); i++){
+		if (this->ChannelsInvite[i] == ChName)
+			return true;
+	}
+	return false;
+}
 int Client::GetFd(){return this->fd;}
 bool Client::getRegistered(){return registered;}
 std::string Client::GetNickName(){return this->nickname;}
@@ -38,4 +45,13 @@ void Client::setIpAdd(std::string ipadd){this->ipadd = ipadd;}
 //---------------//Methods
 void Client::clearBuffer(){buffer.clear();}
 bool Client::GetLogedIn(){return this->logedin;}
+void Client::AddChannelInvite(std::string &chname){
+	ChannelsInvite.push_back(chname);
+}
+void Client::RmChannelInvite(std::string &chname){
+	for (size_t i = 0; i < this->ChannelsInvite.size(); i++){
+		if (this->ChannelsInvite[i] == chname)
+			{this->ChannelsInvite.erase(this->ChannelsInvite.begin() + i); return;}
+	}
+}
 

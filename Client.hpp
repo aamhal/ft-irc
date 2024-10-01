@@ -39,5 +39,7 @@ public:
 	void setIpAdd(std::string ipadd);
 	//---------------//Methods
 	void clearBuffer();
+	void AddChannelInvite(std::string &chname);
+	void RmChannelInvite(std::string &chname);
 
 };
