@@ -96,4 +96,15 @@ public:
 	void	JOIN(std::string cmd, int fd);
 	// --------------// Invite
 	void Invite(std::string &cmd, int &fd);
+	//-----------------// MODE
+	void 		mode_command(std::string& cmd, int fd);
+	std::string invite_only(Channel *channel, char opera, std::string chain);
+	std::string topic_restriction(Channel *channel ,char opera, std::string chain);
+	std::string password_mode(std::vector<std::string> splited, Channel *channel, size_t &pos, char opera, int fd, std::string chain, std::string& arguments);
+	std::string signe_privilege(std::vector<std::string> splited, Channel *channel, size_t& pos, int fd, char opera, std::string chain, std::string& arguments);
+	std::string channel_limit(std::vector<std::string> splited, Channel *channel, size_t &pos, char opera, int fd, std::string chain, std::string& arguments);
+	bool		isvalid_limit(std::string& limit);
+	std::string mode_toAppend(std::string chain, char opera, char mode);
+	std::vector<std::string> splitParams(std::string params);
+	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);
 };
