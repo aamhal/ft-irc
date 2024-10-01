@@ -1,27 +1,25 @@
 #include "Server.hpp"
-
-bool Server::getSignal = false;
 Server::Server(){this->server_fdsocket = -1;}
 Server::~Server(){}
 
 //---------------//Getters
-int Server::getPort(){return this->my_port;}
-int Server::getFd(){return this->server_fdsocket;}
-Client *Server::getClient(int fd){
+int Server::GetPort(){return this->my_port;}
+int Server::GetFd(){return this->server_fdsocket;}
+Client *Server::GetClient(int fd){
 	for (size_t i = 0; i < this->clients.size(); i++){
 		if (this->clients[i].GetFd() == fd)
 			return &this->clients[i];
 	}
 	return NULL;
 }
-Client *Server::getClientNick(std::string nickname){
+Client *Server::GetClientNick(std::string nickname){
 	for (size_t i = 0; i < this->clients.size(); i++){
 		if (this->clients[i].GetNickName() == nickname)
 			return &this->clients[i];
 	}
 	return NULL;
 }
-Channel *Server::getChannel(std::string name)
+Channel *Server::GetChannel(std::string name)
 {
 	for (size_t i = 0; i < this->channels.size(); i++){
 		if (this->channels[i].GetName() == name)
@@ -33,29 +31,29 @@ Channel *Server::getChannel(std::string name)
 
 //---------------//Getters
 //---------------//Setters
+std::string Server::GetPassword(){return this->password;}
 void Server::addChannel(Channel newChannel){this->channels.push_back(newChannel);}
-void Server::setFd(int fd){this->server_fdsocket = fd;}
-void Server::setPort(int port){this->my_port = port;}
+void Server::SetFd(int fd){this->server_fdsocket = fd;}
+void Server::SetPort(int port){this->my_port = port;}
 void Server::setPassword(std::string password){this->password = password;}
-std::string server::GetPassword(){return this->password;}
 void Server::addClient(Client newClient){this->clients.push_back(newClient);}
 void Server::addFds(pollfd newFd){this->fds.push_back(newFd);}
 //---------------//Setters
 //---------------//Remove Methods
-void Server::removeClient(int fd){
+void Server::RemoveClient(int fd){
 	for (size_t i = 0; i < this->clients.size(); i++){
 		if (this->clients[i].GetFd() == fd)
 			{this->clients.erase(this->clients.begin() + i); return;}
 	}
 }
-void Server::removeChannel(std::string name){
+void Server::RemoveChannel(std::string name){
 	for (size_t i = 0; i < this->channels.size(); i++){
 		if (this->channels[i].GetName() == name)
 			{this->channels.erase(this->channels.begin() + i); return;}
 	}
 }
 
-void Server::removeFds(int fd){
+void Server::RemoveFds(int fd){
 	for (size_t i = 0; i < this->fds.size(); i++){
 		if (this->fds[i].fd == fd)
 			{this->fds.erase(this->fds.begin() + i); return;}
@@ -250,14 +248,14 @@ if(cmd.empty())
 	if(found != std::string::npos)
 		cmd = cmd.substr(found);
     if(splited_cmd.size() && (splited_cmd[0] == "PASS" || splited_cmd[0] == "pass"))
-        client_authen(fd, cmd);
+        authenticateClient(fd, cmd);
 	else if (splited_cmd.size() && (splited_cmd[0] == "NICK" || splited_cmd[0] == "nick"))
-		set_nickname(cmd,fd);
+		assignNickname(fd,cmd);
 	else if(splited_cmd.size() && (splited_cmd[0] == "USER" || splited_cmd[0] == "user"))
-		set_username(cmd, fd);
+		assignUsername(cmd, fd);
 	else if(notregistered(fd))
 	{
-		else if (splited_cmd.size() && (splited_cmd[0] == "JOIN" || splited_cmd[0] == "join"))
+		 if (splited_cmd.size() && (splited_cmd[0] == "JOIN" || splited_cmd[0] == "join"))
 			JOIN(cmd, fd);
 		else if (splited_cmd.size() && (splited_cmd[0] == "MODE" || splited_cmd[0] == "mode"))
 			mode_command(cmd, fd);

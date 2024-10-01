@@ -46,26 +46,25 @@ public:
 	Server();
 	~Server();
 	//---------------//Getters
-	Client *getClientNick(std::string nickname);
-	int getFd();
-	int getPort();
-	std::string getPassword();
-	Client *getClient(int fd);
-	Channel *getChannel(std::string name);      
-	static bool getSignal();
+	Client *GetClientNick(std::string nickname);
+	int GetFd();
+	int GetPort();
+	std::string GetPassword();
+	Client *GetClient(int fd);
+	Channel *GetChannel(std::string name);      
 	//---------------//Setters
-	void setPort(int port);
-	void setNickname(int fd, std::string cmd);
-	void setUsername(std::string& username, int fd);
+	void SetPort(int port);
+	void assignNickname(int clientFd, std::string command);
+	void assignUsername(std::string& command, int clientFd);
 	void addChannel(Channel newChannel);
 	void addClient(Client newClient);
 	void addFds(pollfd newFd);
-	void setFd(int server_fdsocket);
+	void SetFd(int server_fdsocket);
 	void setPassword(std::string password);
 	//---------------//Remove Methods
-	void removeFds(int fd);
-	void removeClient(int fd);
-	void removeChannel(std::string name);
+	void RemoveFds(int fd);
+	void RemoveClient(int fd);
+	void RemoveChannel(std::string name);
 	//---------------//Send Methods
 	void senderror(int code, std::string clientname, int fd, std::string msg);
 	void senderror(int code, std::string clientname, std::string channelname, int fd, std::string msg);
