@@ -259,6 +259,8 @@ void Server::parse_exec_cmd(std::string &cmd, int fd)
 		JOIN(cmd, fd);
 	else if(splited_cmd.size() && (splited_cmd[0] == "INVITE" || splited_cmd[0] == "invite"))
 		Invite(cmd, fd);
+	else if(splited_cmd.size() && (splited_cmd[0] == "MODE" || splited_cmd[0] == "mode"))
+		mode_command(cmd, fd);
 	else 
     {
         std::cout << "Command not found" << std::endl;

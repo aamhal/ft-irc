@@ -78,7 +78,7 @@ void Server::mode_command(std::string& cmd, int fd)
 	}
 	else if (modeset.empty()) // response with the channel modes (MODE #channel)
 	{
-		_sendResponse(RPL_CHANNELMODES(cli->GetNickName(), channel->GetName(), channel->getModes()) + \
+		_sendResponse(RPL_CHANNELMODES(cli->GetNickName(), channel->GetName(), channel->getM()) + \
 		RPL_CREATIONTIME(cli->GetNickName(), channel->GetName(),channel->get_creationtime()),fd);
 		return ;
 	}
