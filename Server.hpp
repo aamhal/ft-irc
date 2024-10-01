@@ -46,26 +46,26 @@ public:
 	Server();
 	~Server();
 	//---------------//Getters
-	Client *GetClientNick(std::string nickname);
-	int GetFd();
-	int GetPort();
-	std::string GetPassword();
-	Client *GetClient(int fd);
-	Channel *GetChannel(std::string name);      
-	static bool isBotfull;
+	Client *getClientNick(std::string nickname);
+	int getFd();
+	int getPort();
+	std::string getPassword();
+	Client *getClient(int fd);
+	Channel *getChannel(std::string name);      
+	static bool getSignal();
 	//---------------//Setters
-	void SetPort(int port);
-	void set_nickname(int fd, std::string cmd);
-	void set_username(std::string& username, int fd);
-	void AddChannel(Channel newChannel);
-	void AddClient(Client newClient);
-	void AddFds(pollfd newFd);
-	void SetFd(int server_fdsocket);
-	void SetPassword(std::string password);
+	void setPort(int port);
+	void setNickname(int fd, std::string cmd);
+	void setUsername(std::string& username, int fd);
+	void addChannel(Channel newChannel);
+	void addClient(Client newClient);
+	void addFds(pollfd newFd);
+	void setFd(int server_fdsocket);
+	void setPassword(std::string password);
 	//---------------//Remove Methods
-	void RemoveFds(int fd);
-	void RemoveClient(int fd);
-	void RemoveChannel(std::string name);
+	void removeFds(int fd);
+	void removeClient(int fd);
+	void removeChannel(std::string name);
 	//---------------//Send Methods
 	void senderror(int code, std::string clientname, int fd, std::string msg);
 	void senderror(int code, std::string clientname, std::string channelname, int fd, std::string msg);
@@ -83,9 +83,9 @@ public:
 	std::vector<std::string> split_cmd(std::string &str);
 	std::vector<std::string> split_recivedBuffer(std::string str);
 	//---------------//Authentification Methods
-	void client_authen(int fd, std::string pass);
-	bool is_validNickname(std::string& nickname);
-	bool nickNameInUse(std::string& nickname);
+	void authenticateClient(int fd, std::string pass);
+	bool isNicknameValid(std::string& nickname);
+	bool isNicknameInUse(std::string& nickname);
 	bool BypassForBot( int fd, std::string cmd);
 	bool notregistered(int fd);
 	//----------------// JOIN 

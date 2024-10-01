@@ -10,7 +10,6 @@ bool isPortValid(std::string my_port){
 int main(int ac, char **av)
 {
 
-	std::cout << "hello" << std::endl;
 	Server ser;
 	if (ac != 3)
 		{std::cout << "Usage: " << av[0] << " <port number> <password>" << std::endl; return 1;}
@@ -19,7 +18,7 @@ int main(int ac, char **av)
 	{
 		signal(SIGINT, Server::SignalHandler);
 		signal(SIGQUIT, Server::SignalHandler);
-		signal(SIGPIPE, SIG_IGN); // or MSG_NOSIGNAL flag in send() to ignore SIGPIPE on linux systems
+		signal(SIGPIPE, SIG_IGN);
 		if(!isPortValid(av[1]) || !*av[2] || std::strlen(av[2]) > 20)
 			{std::cout << "invalid Port number / Password!" << std::endl; return 1;}
 		ser.init(std::atoi(av[1]), av[2]);
