@@ -12,7 +12,7 @@ all: $(NAME)
 $(NAME): $(OBJS)
 	$(CC) $(FLAGS) -o $(NAME) $(OBJS)
 
-%.o: %.cpp Server.hpp Client.hpp replies.hpp Channel.hpp
+%.o: %.cpp Server.hpp Client.hpp Replies.hpp Channel.hpp
 	$(CC) $(FLAGS) -c $< -o $@
 
 clean:

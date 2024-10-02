@@ -1,41 +1,39 @@
 #include "Server.hpp"
 
-std::string Server::mode_toAppend(std::string chain, char signe, char mode)
+std::string Server::mode_toAppend(std::string modeChain, char sign, char mode)
 {
 	std::stringstream ss;
 
-	ss.clear();
 	char last = '\0';
-	for(size_t i = 0; i < chain.size(); i++)
+	for(size_t i = 0; i < modeChain.size(); i++)
 	{
-		if(chain[i] == '+' || chain[i] == '-')
-			last = chain[i];
+		if(modeChain[i] == '+' || modeChain[i] == '-')
+			last = modeChain[i];
 	}
-	if(last != signe)
-		ss << signe << mode;
+	if(last != sign)
+		ss << sign << mode;
 	else
 		ss << mode;
 	return ss.str();
 }
 
-void Server::getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params)
+void Server::getCmdArgs(std::string cmd, std::string& name, std::string& modeSet, std::string& parameters)
 {
 	std::istringstream stm(cmd);
 	stm >> name;
-	stm >> modeset;
-	size_t found = cmd.find_first_not_of(name + modeset + " \t\v");
+	stm >> modeSet;
+	size_t found = cmd.find_first_not_of(name + modeSet + " \t\v");
 	if(found != std::string::npos)
-		params = cmd.substr(found);
+		parameters = cmd.substr(found);
 }
 
-
-std::vector<std::string> Server::splitParams(std::string params)
+std::vector<std::string> Server::splitParams(std::string parameters)
 {
-	if(!params.empty() && params[0] == ':')
-		params.erase(params.begin());
+	if(!parameters.empty() && parameters[0] == ':')
+		parameters.erase(parameters.begin());
 	std::vector<std::string> tokens;
 	std::string param;
-	std::istringstream stm(params);
+	std::istringstream stm(parameters);
 	while (std::getline(stm, param, ','))
 	{
 		tokens.push_back(param);
@@ -44,115 +42,114 @@ std::vector<std::string> Server::splitParams(std::string params)
 	return tokens;
 }
 
-void Server::mode_command(std::string& cmd, int fd)
+void Server::mode_command(std::string& cmd, int clientFd)
 {
 	std::string channelName;
-	std::string params;
-	std::string modeset;
-	std::stringstream mode_chain;
+	std::string parameters;
+	std::string modeSet;
+	std::stringstream modeChain;
 	std::string arguments;
-	Channel *channel;
-	char signe = '\0';
+	Channel* channel;
+	char sign;
 
-	arguments.clear();
-	mode_chain.clear();
-	Client *cli = GetClient(fd);
+	Client* client = GetClient(clientFd);
 	size_t found = cmd.find_first_not_of("MODEmode \t\v");
 	if(found != std::string::npos)
 		cmd = cmd.substr(found);
 	else
 	{
-		_sendResponse(ERR_NOTENOUGHPARAM(cli->GetNickName()), fd); 
-		return ;
+		_sendResponse(ERR_NOTENOUGHPARAM(client->GetNickName()), clientFd); 
+		return;
 	}
-	getCmdArgs(cmd ,channelName, modeset ,params);
-	std::vector<std::string> tokens = splitParams(params);
+	getCmdArgs(cmd, channelName, modeSet, parameters);
+	std::vector<std::string> tokens = splitParams(parameters);
 	if(channelName[0] != '#' || !(channel = GetChannel(channelName.substr(1))))
 	{
-		_sendResponse(ERR_CHANNELNOTFOUND(cli->GetUserName(),channelName), fd);
-		return ;
+		_sendResponse(ERR_CHANNELNOTFOUND(client->GetUserName(), channelName), clientFd);
+		return;
 	}
-	else if (!channel->get_client(fd) && !channel->get_admin(fd))
+	else if (!channel->get_client(clientFd) && !channel->get_admin(clientFd))
 	{
-		senderror(442, GetClient(fd)->GetNickName(), channelName, GetClient(fd)->GetFd(), " :You're not on that channel\r\n"); return;
+		senderror(442, GetClient(clientFd)->GetNickName(), channelName, GetClient(clientFd)->GetFd(), " :You're not on that channel\r\n"); 
+		return;
 	}
-	else if (modeset.empty()) // response with the channel modes (MODE #channel)
+	else if (modeSet.empty()) // response with the channel modes (MODE #channel)
 	{
-		_sendResponse(RPL_CHANNELMODES(cli->GetNickName(), channel->GetName(), channel->getM()) + \
-		RPL_CREATIONTIME(cli->GetNickName(), channel->GetName(),channel->get_creationtime()),fd);
-		return ;
+		_sendResponse(RPL_CHANNELMODES(client->GetNickName(), channel->GetName(), channel->getM()) + \
+		RPL_CREATIONTIME(client->GetNickName(), channel->GetName(), channel->get_creationtime()), clientFd);
+		return;
 	}
-	else if (!channel->get_admin(fd)) // client is not channel signetor
+	else if (!channel->get_admin(clientFd)) // client is not channel operator
 	{
-		_sendResponse(ERR_NOTOPERATOR(channel->GetName()), fd);
-		return ;
+		_sendResponse(ERR_NOTOPERATOR(channel->GetName()), clientFd);
+		return;
 	}
 	else if(channel)
 	{
-		size_t pos = 0;
-		for(size_t i = 0; i < modeset.size(); i++)
+		size_t tokenIndex = 0;
+		for(size_t i = 0; i < modeSet.size(); i++)
 		{
-			if(modeset[i] == '+' || modeset[i] == '-')
-				signe = modeset[i];
+			if(modeSet[i] == '+' || modeSet[i] == '-')
+				sign = modeSet[i];
 			else
 			{
-				if(modeset[i] == 'i')//invite mode
-					mode_chain << invite_only(channel , signe, mode_chain.str());
-				else if (modeset[i] == 't') //topic restriction mode
-					mode_chain << topic_restriction(channel, signe, mode_chain.str());
-				else if (modeset[i] == 'k') //password set/remove
-					mode_chain <<  password_mode(tokens, channel, pos, signe, fd, mode_chain.str(), arguments);
-				else if (modeset[i] == 'o') //set/remove user signetor privilege
-						mode_chain << signe_privilege(tokens, channel, pos, fd, signe, mode_chain.str(), arguments);
-				else if (modeset[i] == 'l') //set/remove channel limits
-					mode_chain << channel_limit(tokens, channel, pos, signe, fd, mode_chain.str(), arguments);
+				if(modeSet[i] == 'i') // invite mode
+					modeChain << invite_only(channel, sign, modeChain.str());
+				else if (modeSet[i] == 't') // topic restriction mode
+					modeChain << topic_restriction(channel, sign, modeChain.str());
+				else if (modeSet[i] == 'k') // password set/remove
+					modeChain << password_mode(tokens, channel, tokenIndex, sign, clientFd, modeChain.str(), arguments);
+				else if (modeSet[i] == 'o') // set/remove user operator privilege
+					modeChain << signe_privilege(tokens, channel, tokenIndex, clientFd, sign, modeChain.str(), arguments);
+				else if (modeSet[i] == 'l') // set/remove channel limits
+					modeChain << channel_limit(tokens, channel, tokenIndex, sign, clientFd, modeChain.str(), arguments);
 				else
-					_sendResponse(ERR_UNKNOWNMODE(cli->GetNickName(), channel->GetName(),modeset[i]),fd);
+					_sendResponse(ERR_UNKNOWNMODE(client->GetNickName(), channel->GetName(), modeSet[i]), clientFd);
 			}
 		}
 	}
-	std::string chain = mode_chain.str();
-	if(chain.empty())
-		return ;
- 	channel->sendTo_all(RPL_CHANGEMODE(cli->getHostname(), channel->GetName(), mode_chain.str(), arguments));
+	std::string modeResponseChain = modeChain.str();
+	if(modeResponseChain.empty())
+		return;
+	channel->sendTo_all(RPL_CHANGEMODE(client->getHostname(), channel->GetName(), modeResponseChain, arguments));
 }
 
-std::string Server::invite_only(Channel *channel, char signe, std::string chain)
+std::string Server::invite_only(Channel* channel, char sign, std::string modeChain)
 {
-	std::string param;
-	param.clear();
-	if(signe == '+' && !channel->getModeAtindex(0))
+	std::string modeResponse;
+
+	if(sign == '+' && !channel->getModeAtindex(0))
 	{
 		channel->setModeAtindex(0, true);
 		channel->SetInvitOnly(1);
-		param =  mode_toAppend(chain, signe, 'i');
+		modeResponse = mode_toAppend(modeChain, sign, 'i');
 	}
-	else if (signe == '-' && channel->getModeAtindex(0))
+	else if (sign == '-' && channel->getModeAtindex(0))
 	{
 		channel->setModeAtindex(0, false);
 		channel->SetInvitOnly(0);
-		param =  mode_toAppend(chain, signe, 'i');
+		modeResponse = mode_toAppend(modeChain, sign, 'i');
 	}
-	return param;
+	return modeResponse;
 }
 
-std::string Server::topic_restriction(Channel *channel ,char signe, std::string chain)
+std::string Server::topic_restriction(Channel* channel, char sign, std::string modeChain)
 {
-	std::string param;
-	param.clear();
-	if(signe == '+' && !channel->getModeAtindex(1))
+	std::string modeResponse;
+	modeResponse.clear();
+	if(sign == '+' && !channel->getModeAtindex(1))
 	{
 		channel->setModeAtindex(1, true);
 		channel->set_topicRestriction(true);
-		param =  mode_toAppend(chain, signe, 't');
+		modeResponse = mode_toAppend(modeChain, sign, 't');
 	}
-	else if (signe == '-' && channel->getModeAtindex(1))
+	else if (sign == '-' && channel->getModeAtindex(1))
 	{
 		channel->setModeAtindex(1, false);
 		channel->set_topicRestriction(false);
-		param =  mode_toAppend(chain, signe, 't');
-	}	
-	return param;
+		modeResponse = mode_toAppend(modeChain, sign, 't');
+	}
+	return modeResponse;
 }
 
 bool validPassword(std::string password)
@@ -166,132 +163,125 @@ bool validPassword(std::string password)
 	}
 	return true;
 }
-std::string Server::password_mode(std::vector<std::string> tokens, Channel *channel, size_t &pos, char signe, int fd, std::string chain, std::string &arguments)
+
+std::string Server::password_mode(std::vector<std::string> tokens, Channel* channel, size_t& tokenIndex, char sign, int clientFd, std::string modeChain, std::string& arguments)
 {
-	std::string param;
+	std::string modeResponse;
 	std::string pass;
 
-	param.clear();
-	pass.clear();
-	if(tokens.size() > pos)
-		pass = tokens[pos++];
+	if(tokens.size() > tokenIndex)
+		pass = tokens[tokenIndex++];
 	else
 	{
-		_sendResponse(ERR_NEEDMODEPARM(channel->GetName(),std::string("(k)")),fd);
-		return param;
+		_sendResponse(ERR_NEEDMODEPARM(channel->GetName(), std::string("(k)")), clientFd);
+		return modeResponse;
 	}
 	if(!validPassword(pass))
 	{
-		_sendResponse(ERR_INVALIDMODEPARM(channel->GetName(),std::string("(k)")),fd);
-		return param;
+		_sendResponse(ERR_INVALIDMODEPARM(channel->GetName(), std::string("(k)")), clientFd);
+		return modeResponse;
 	}
-	if(signe == '+')
+	if(sign == '+')
 	{
 		channel->setModeAtindex(2, true);
 		channel->SetPassword(pass);
 		if(!arguments.empty())
 			arguments += " ";
 		arguments += pass;
-		param = mode_toAppend(chain,signe, 'k');
+		modeResponse = mode_toAppend(modeChain, sign, 'k');
 	}
-	else if (signe == '-' && channel->getModeAtindex(2))
+	else if (sign == '-' && channel->getModeAtindex(2))
 	{
 		if(pass == channel->GetPassword())
-		{		
+		{
 			channel->setModeAtindex(2, false);
 			channel->SetPassword("");
-			param = mode_toAppend(chain,signe, 'k');
+			modeResponse = mode_toAppend(modeChain, sign, 'k');
 		}
 		else
-			_sendResponse(ERR_KEYSET(channel->GetName()),fd);
+			_sendResponse(ERR_KEYSET(channel->GetName()), clientFd);
 	}
-	return param;
+	return modeResponse;
 }
 
-std::string Server::signe_privilege(std::vector<std::string> tokens, Channel *channel, size_t& pos, int fd, char signe, std::string chain, std::string& arguments)
+std::string Server::signe_privilege(std::vector<std::string> tokens, Channel* channel, size_t& tokenIndex, int clientFd, char sign, std::string modeChain, std::string& arguments)
 {
 	std::string user;
-	std::string param;
+	std::string modeResponse;
 
-	param.clear();
-	user.clear();
-	if(tokens.size() > pos)
-		user = tokens[pos++];
+	if(tokens.size() > tokenIndex)
+		user = tokens[tokenIndex++];
 	else
 	{
-		_sendResponse(ERR_NEEDMODEPARM(channel->GetName(),"(o)"),fd);
-		return param;
+		_sendResponse(ERR_NEEDMODEPARM(channel->GetName(), "(o)"), clientFd);
+		return modeResponse;
 	}
 	if(!channel->clientInChannel(user))
 	{
-		_sendResponse(ERR_NOSUCHNICK(channel->GetName(), user),fd);
-		return param;
+		_sendResponse(ERR_NOSUCHNICK(channel->GetName(), user), clientFd);
+		return modeResponse;
 	}
-	if(signe == '+')
+	if(sign == '+')
 	{
-		channel->setModeAtindex(3,true);
+		channel->setModeAtindex(3, true);
 		if(channel->change_clientToAdmin(user))
 		{
-			param = mode_toAppend(chain, signe, 'o');
+			modeResponse = mode_toAppend(modeChain, sign, 'o');
 			if(!arguments.empty())
 				arguments += " ";
 			arguments += user;
 		}
 	}
-	else if (signe == '-')
+	else if (sign == '-')
 	{
-		channel->setModeAtindex(3,false);
+		channel->setModeAtindex(3, false);
 		if(channel->change_adminToClient(user))
 		{
-			param = mode_toAppend(chain, signe, 'o');
-				if(!arguments.empty())
-					arguments += " ";
+			modeResponse = mode_toAppend(modeChain, sign, 'o');
+			if(!arguments.empty())
+				arguments += " ";
 			arguments += user;
-
 		}
 	}
-	return param;
+	return modeResponse;
 }
 
 bool Server::isvalid_limit(std::string& limit)
 {
-	return (!(limit.find_first_not_of("0123456789")!= std::string::npos) && std::atoi(limit.c_str()) > 0);
+	return (!(limit.find_first_not_of("0123456789") != std::string::npos) && std::atoi(limit.c_str()) > 0);
 }
 
-std::string Server::channel_limit(std::vector<std::string> tokens,  Channel *channel, size_t &pos, char signe, int fd, std::string chain, std::string& arguments)
+std::string Server::channel_limit(std::vector<std::string> tokens, Channel* channel, size_t& tokenIndex, char sign, int clientFd, std::string modeChain, std::string& arguments)
 {
 	std::string limit;
-	std::string param;
+	std::string modeResponse;
 
-	param.clear();
-	limit.clear();
-	if(signe == '+')
+	if(tokens.size() > tokenIndex)
+		limit = tokens[tokenIndex++];
+	else
 	{
-		if(tokens.size() > pos )
-		{
-			limit = tokens[pos++];
-			if(!isvalid_limit(limit))
-			{
-				_sendResponse(ERR_INVALIDMODEPARM(channel->GetName(),"(l)"), fd);
-			}
-			else
-			{
-				channel->setModeAtindex(4, true);
-				channel->SetLimit(std::atoi(limit.c_str()));
-				if(!arguments.empty())
-					arguments += " ";
-				arguments += limit;
-				param =  mode_toAppend(chain, signe, 'l');
-			}
-		}
-		else
-			_sendResponse(ERR_NEEDMODEPARM(channel->GetName(),"(l)"),fd);
+		_sendResponse(ERR_NEEDMODEPARM(channel->GetName(), "(l)"), clientFd);
+		return modeResponse;
 	}
-	else if (signe == '-' && channel->getModeAtindex(4))
+	if(!isvalid_limit(limit))
+	{
+		_sendResponse(ERR_INVALIDMODEPARM(channel->GetName(), "(l)"), clientFd);
+		return modeResponse;
+	}
+	if(sign == '+')
+	{
+		channel->setModeAtindex(4, true);
+		channel->SetLimit(atoi(limit.c_str()));
+		if(!arguments.empty())
+			arguments += " ";
+		arguments += limit;
+		modeResponse = mode_toAppend(modeChain, sign, 'l');
+	}
+	else if (sign == '-')
 	{
 		channel->setModeAtindex(4, false);
-		channel->SetLimit(0);
-		param  = mode_toAppend(chain, signe, 'l');
+		channel->SetLimit(-1);
+		modeResponse = mode_toAppend(modeChain, sign, 'l');
 	}
-	return param;
+	return modeResponse;
 }
