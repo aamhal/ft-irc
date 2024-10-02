@@ -1,21 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Invite.cpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akaabi <akaabi@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 10:44:11 by akaabi            #+#    #+#             */
-/*   Updated: 2024/10/01 08:35:43 by akaabi           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "Server.hpp"
 
 
 void Server::Invite(std::string &cmd, int &fd)
 {
-	std::vector<std::string> splited_command = split_cmd(cmd);
+	std::vector<std::string> splited_command = splitInputCommand(cmd);
 	if(splited_command.size() < 3)// bad param used
 		{senderror(461, GetClient(fd)->GetNickName(), fd, " :Not enough parameters\r\n"); return;}
 	std::string Name_channel = splited_command[2].substr(1);

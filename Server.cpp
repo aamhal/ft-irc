@@ -111,7 +111,7 @@ void Server::init(int port, std::string pass)
 {
 	this->password = pass;
 	this->my_port = port;
-	this->set_sever_socket();
+	this->serverSocket();
 
 	std::cout << GRE << "Server <" << server_fdsocket << "> Connected" << WHI << std::endl;
 	std::cout << "Waiting to accept a connection...\n";
@@ -124,7 +124,7 @@ void Server::init(int port, std::string pass)
 			if (fds[i].revents & POLLIN)
 			{
 				if (fds[i].fd == server_fdsocket)
-					this->accept_new_client();
+					this->newClient();
 				else
 					this->reciveNewData(fds[i].fd);
 			}
@@ -133,7 +133,7 @@ void Server::init(int port, std::string pass)
 	close_fds();
 }
 
-void Server::set_sever_socket()
+void Server::serverSocket()
 {
 	int en = 1;
 	add.sin_family = AF_INET;
@@ -156,7 +156,7 @@ void Server::set_sever_socket()
 	fds.push_back(new_cli);
 }
 
-void Server::accept_new_client()
+void Server::newClient()
 {
 	Client cli;
 	memset(&cliadd, 0, sizeof(cliadd));
@@ -176,7 +176,7 @@ void Server::accept_new_client()
 	std::cout << GRE << "Client <" << incofd << "> Connected" << WHI << std::endl;
 }
 
-std::vector<std::string> Server::split_cmd(std::string& cmd)
+std::vector<std::string> Server::splitInputCommand(std::string& cmd)
 {
 	std::vector<std::string> vec;
 	std::istringstream stm(cmd);
@@ -209,7 +209,7 @@ void Server::reciveNewData(int fd)
 			return;
 		cmd = split_recivedBuffer(cli->getBuffer());
 		for(size_t i = 0; i < cmd.size(); i++)
-			this->parse_exec_cmd(cmd[i], fd);
+			this->parseInput(cmd[i], fd);
 		if(GetClient(fd))
 			GetClient(fd)->clearBuffer();
 	}
@@ -239,11 +239,11 @@ bool Server::notregistered(int fd)
 
 
 
-void Server::parse_exec_cmd(std::string &cmd, int fd)
+void Server::parseInput(std::string &cmd, int fd)
 {
 if(cmd.empty())
 		return ;
-	std::vector<std::string> splited_cmd = split_cmd(cmd);
+	std::vector<std::string> splited_cmd = splitInputCommand(cmd);
 	size_t found = cmd.find_first_not_of(" \t\v");
 	if(found != std::string::npos)
 		cmd = cmd.substr(found);
@@ -258,7 +258,7 @@ if(cmd.empty())
 		 if (splited_cmd.size() && (splited_cmd[0] == "JOIN" || splited_cmd[0] == "join"))
 			JOIN(cmd, fd);
 		else if (splited_cmd.size() && (splited_cmd[0] == "MODE" || splited_cmd[0] == "mode"))
-			mode_command(cmd, fd);
+			mode(cmd, fd);
 		else if (splited_cmd.size() && (splited_cmd[0] == "INVITE" || splited_cmd[0] == "invite"))
 			Invite(cmd,fd);
 		else if (splited_cmd.size())

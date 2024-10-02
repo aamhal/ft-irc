@@ -1,19 +1,7 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Join.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akaabi <akaabi@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/25 10:07:43 by akaabi            #+#    #+#             */
-/*   Updated: 2024/10/01 08:56:08 by akaabi           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Server.hpp"
 
 
-int Server::Split_cmd_join(std::vector<std::pair<std::string, std::string> > &token, std::string cmd, int fd)
+int Server::splitInputCommand_join(std::vector<std::pair<std::string, std::string> > &token, std::string cmd, int fd)
 {
 	std::vector<std::string> tmp;
 	std::string ChStr, PassStr, buff;
@@ -119,10 +107,10 @@ void Server::NotFound_Chennel(std::vector<std::pair<std::string, std::string> >&
 void Server::JOIN(std::string cmd, int fd)
 {
 	std::vector<std::pair<std::string, std::string> > token;
-	// Split_cmd_join(token, cmd, fd);
+	// splitInputCommand_join(token, cmd, fd);
 	if (token.size() > 10) //more than 10 Channels
 		{senderror(407, GetClient(fd)->GetNickName(), GetClient(fd)->GetFd(), " :Too many channels\r\n"); return;}
-	if (!Split_cmd_join(token, cmd, fd))//no channel name
+	if (!splitInputCommand_join(token, cmd, fd))//no channel name
 		{senderror(461, GetClient(fd)->GetNickName(), GetClient(fd)->GetFd(), " :Not enough parameters\r\n"); return;}
 	for (size_t i = 0; i < token.size(); i++){
 		bool flag = false;

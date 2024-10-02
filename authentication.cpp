@@ -109,7 +109,7 @@ void Server::assignNickname(int clientFd, std::string command)
 
 void	Server::assignUsername(std::string& command, int clientFd)
 {
-	std::vector<std::string> commandParts = split_cmd(command);
+	std::vector<std::string> commandParts = splitInputCommand(command);
 
 	Client *client = GetClient(clientFd); 
 	if((client && commandParts.size() < 5))

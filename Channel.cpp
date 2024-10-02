@@ -1,19 +1,8 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akaabi <akaabi@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/25 10:00:29 by akaabi            #+#    #+#             */
-/*   Updated: 2024/10/01 08:47:04 by akaabi           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "Channel.hpp"
 
 Channel::Channel(){
-	this->only_invite = 0;
+	this->invite = 0;
 	this->topic = 0;
 	this->key = 0;
 	this->limit = 0;
@@ -29,7 +18,7 @@ Channel::~Channel(){}
 Channel::Channel(Channel const &src){*this = src;}
 Channel &Channel::operator=(Channel const &src){
 	if (this != &src){
-		this->only_invite = src.only_invite;
+		this->invite = src.invite;
 		this->topic = src.topic;
 		this->key = src.key;
 		this->limit = src.limit;
@@ -45,7 +34,7 @@ Channel &Channel::operator=(Channel const &src){
 	return *this;
 }
 //---------------//Setters
-void Channel::SetInvitOnly(int only_invite){this->only_invite = only_invite;}
+void Channel::SetInvitOnly(int invite){this->invite = invite;}
 void Channel::SetTopic(int topic){this->topic = topic;}
 void Channel::SetTime(std::string time){this->time_creation = time;}
 void Channel::SetKey(int key){this->key = key;}
@@ -63,7 +52,7 @@ void Channel::set_createiontime(){
 }
 //---------------//Setters
 //---------------//Getters
-int Channel::GetInvitOnly(){return this->only_invite;}
+int Channel::GetInvitOnly(){return this->invite;}
 int Channel::GetTopic(){return this->topic;}
 int Channel::GetKey(){return this->key;}
 int Channel::GetLimit(){return this->limit;}

@@ -1,14 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Channel.hpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akaabi <akaabi@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/25 10:00:21 by akaabi            #+#    #+#             */
-/*   Updated: 2024/10/01 08:47:51 by akaabi           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #pragma once
 
@@ -21,7 +10,7 @@ class Client;
 class Channel {
    private:
 
-	int only_invite;
+	int invite;
 	int topic;
 	int key;
 	int limit;
@@ -40,7 +29,7 @@ public:
 	Channel(Channel const &src);
 	Channel &operator=(Channel const &src);
 	//---------------//Setters
-	void SetInvitOnly(int only_invite);
+	void SetInvitOnly(int invite);
 	void SetTopic(int topic);
 	void SetKey(int key);
 	void SetLimit(int limit);

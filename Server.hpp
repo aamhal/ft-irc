@@ -74,12 +74,12 @@ public:
 	void close_fds();
 	//---------------//Server Methods
 	void init(int port, std::string pass);
-	void set_sever_socket();
+	void serverSocket();
 	void reciveNewData(int fd);
-	void accept_new_client();
+	void newClient();
 	//---------------//Parsing Methods
-	void parse_exec_cmd(std::string &cmd, int fd);
-	std::vector<std::string> split_cmd(std::string &str);
+	void parseInput(std::string &cmd, int fd);
+	std::vector<std::string> splitInputCommand(std::string &str);
 	std::vector<std::string> split_recivedBuffer(std::string str);
 	//---------------//Authentification Methods
 	void authenticateClient(int fd, std::string pass);
@@ -88,7 +88,7 @@ public:
 	bool BypassForBot( int fd, std::string cmd);
 	bool notregistered(int fd);
 	//----------------// JOIN 
-	int		Split_cmd_join(std::vector<std::pair<std::string, std::string> > &token, std::string cmd, int fd);
+	int		splitInputCommand_join(std::vector<std::pair<std::string, std::string> > &token, std::string cmd, int fd);
 	int		Client_Finder(std::string nickname);
 	void	Found_Chennel(std::vector<std::pair<std::string, std::string> >&token, int i, int j, int fd);
 	void	NotFound_Chennel(std::vector<std::pair<std::string, std::string> >&token, int i, int fd);
@@ -96,14 +96,14 @@ public:
 	// --------------// Invite
 	void Invite(std::string &cmd, int &fd);
 	//-----------------// MODE
-	void 		mode_command(std::string& cmd, int fd);
+	void 		mode(std::string& cmd, int fd);
 	std::string invite_only(Channel *channel, char opera, std::string chain);
-	std::string topic_restriction(Channel *channel ,char opera, std::string chain);
-	std::string password_mode(std::vector<std::string> splited, Channel *channel, size_t &pos, char opera, int fd, std::string chain, std::string& arguments);
+	std::string toggleTopicRestriction(Channel *channel ,char opera, std::string chain);
+	std::string togglePasswordRestriction(std::vector<std::string> splited, Channel *channel, size_t &pos, char opera, int fd, std::string chain, std::string& arguments);
 	std::string signe_privilege(std::vector<std::string> splited, Channel *channel, size_t& pos, int fd, char opera, std::string chain, std::string& arguments);
-	std::string channel_limit(std::vector<std::string> splited, Channel *channel, size_t &pos, char opera, int fd, std::string chain, std::string& arguments);
-	bool		isvalid_limit(std::string& limit);
-	std::string mode_toAppend(std::string chain, char opera, char mode);
-	std::vector<std::string> splitParams(std::string params);
+	std::string toggleChannelLimit(std::vector<std::string> splited, Channel *channel, size_t &pos, char opera, int fd, std::string chain, std::string& arguments);
+	bool		isLimitValid(std::string& limit);
+	std::string appendArg(std::string chain, char opera, char mode);
+	std::vector<std::string> splitParameters(std::string params);
 	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);
 };
