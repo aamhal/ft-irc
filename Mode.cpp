@@ -94,7 +94,7 @@ void Server::mode(std::string& cmd, int clientFd)
 			else
 			{
 				if(modeSet[i] == 'i') // invite mode
-					modeChain << invite_only(channel, sign, modeChain.str());
+					modeChain << toggleInvite(channel, sign, modeChain.str());
 				else if (modeSet[i] == 't') // topic restriction mode
 					modeChain << toggleTopicRestriction(channel, sign, modeChain.str());
 				else if (modeSet[i] == 'k') // password set/remove
@@ -114,20 +114,20 @@ void Server::mode(std::string& cmd, int clientFd)
 	channel->sendTo_all(RPL_CHANGEMODE(client->getHostname(), channel->GetName(), modeResponseChain, arguments));
 }
 
-std::string Server::invite_only(Channel* channel, char sign, std::string modeChain)
+std::string Server::toggleInvite(Channel* channel, char sign, std::string modeChain)
 {
 	std::string modeResponse;
 
 	if(sign == '+' && !channel->getModeAtindex(0))
 	{
 		channel->setModeAtindex(0, true);
-		channel->SetInvitOnly(1);
+		channel->setInvite(1);
 		modeResponse = appendArg(modeChain, sign, 'i');
 	}
 	else if (sign == '-' && channel->getModeAtindex(0))
 	{
 		channel->setModeAtindex(0, false);
-		channel->SetInvitOnly(0);
+		channel->setInvite(0);
 		modeResponse = appendArg(modeChain, sign, 'i');
 	}
 	return modeResponse;
@@ -152,16 +152,16 @@ std::string Server::toggleTopicRestriction(Channel* channel, char sign, std::str
 	return modeResponse;
 }
 
-bool isPasswordValid(std::string password)
+int isPasswordValid(std::string password)
 {
 	if(password.empty())
-		return false;
+		return 0;
 	for(size_t i = 0; i < password.size(); i++)
 	{
 		if(!std::isalnum(password[i]) && password[i] != '_')
-			return false;
+			return 0;
 	}
-	return true;
+	return 1;
 }
 
 std::string Server::togglePasswordRestriction(std::vector<std::string> tokens, Channel* channel, size_t& tokenIndex, char sign, int clientFd, std::string modeChain, std::string& arguments)

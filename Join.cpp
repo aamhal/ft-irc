@@ -63,7 +63,7 @@ void Server::Found_Chennel(std::vector<std::pair<std::string, std::string> >&tok
 		{senderror(471, GetClient(fd)->GetNickName(), "#" + token[i].first, GetClient(fd)->GetFd(), " :Cannot join channel (+l)\r\n"); return;}
 	if (Client_Finder(GetClient(fd)->GetNickName()) >= 10)//already Reach 10 clients
 		{senderror(405, GetClient(fd)->GetNickName(), GetClient(fd)->GetFd(), " :You have joined too many channels\r\n"); return;}
-	if (this->channels[j].GetInvitOnly()){//channel is INvite ONLY
+	if (this->channels[j].getInvite()){//channel is INvite ONLY
 		if (!InvitedClient(GetClient(fd), token[i].first, 1))
 			{senderror(473, GetClient(fd)->GetNickName(), "#" + token[i].first, GetClient(fd)->GetFd(), " :Cannot join channel (+i)\r\n"); return;}
 	}

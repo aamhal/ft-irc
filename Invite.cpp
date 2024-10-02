@@ -19,7 +19,7 @@ void Server::Invite(std::string &cmd, int &fd)
 		{senderror(401, splited_command[1], fd, " :No such nick\r\n");return;}
 	if (GetChannel(Name_channel)->GetLimit() && GetChannel(Name_channel)->GetNumberofclient() >= GetChannel(Name_channel)->GetLimit()) //channe full 
 		{senderror(473,GetChannel(Name_channel)->get_client(fd)->GetNickName(),Name_channel,fd," :Cannot invit to channel (+i)\r\n"); return;}
-	if (GetChannel(Name_channel)->GetInvitOnly() && !GetChannel(Name_channel)->get_admin(fd))//cant invite if ur an admin
+	if (GetChannel(Name_channel)->getInvite() && !GetChannel(Name_channel)->get_admin(fd))//cant invite if ur an admin
 		{senderror(482,GetChannel(Name_channel)->get_client(fd)->GetNickName(),splited_command[1],fd," :You're not channel operator\r\n"); return;}
 	//invite sent successfully
 	Client->AddChannelInvite(Name_channel);

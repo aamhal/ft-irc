@@ -4,7 +4,6 @@
 Channel::Channel(){
 	this->invite = 0;
 	this->topic = 0;
-	this->key = 0;
 	this->limit = 0;
 	this->restriction_T = false;
 	this->name = "";
@@ -34,10 +33,9 @@ Channel &Channel::operator=(Channel const &src){
 	return *this;
 }
 //---------------//Setters
-void Channel::SetInvitOnly(int invite){this->invite = invite;}
+void Channel::setInvite(bool invite){this->invite = invite;}
 void Channel::SetTopic(int topic){this->topic = topic;}
 void Channel::SetTime(std::string time){this->time_creation = time;}
-void Channel::SetKey(int key){this->key = key;}
 void Channel::SetLimit(int limit){this->limit = limit;}
 void Channel::SetTopicName(std::string topic_name){this->topic_name = topic_name;}
 void Channel::SetPassword(std::string password){this->password = password;}
@@ -52,9 +50,8 @@ void Channel::set_createiontime(){
 }
 //---------------//Setters
 //---------------//Getters
-int Channel::GetInvitOnly(){return this->invite;}
+int Channel::getInvite(){return this->invite;}
 int Channel::GetTopic(){return this->topic;}
-int Channel::GetKey(){return this->key;}
 int Channel::GetLimit(){return this->limit;}
 int Channel::GetNumberofclient(){return this->clients.size() + this->admins.size();}
 bool Channel::Getrestriction_T() const{return this->restriction_T;}

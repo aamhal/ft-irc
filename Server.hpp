@@ -97,7 +97,7 @@ public:
 	void Invite(std::string &cmd, int &fd);
 	//-----------------// MODE
 	void 		mode(std::string& cmd, int fd);
-	std::string invite_only(Channel *channel, char opera, std::string chain);
+	std::string toggleInvite(Channel *channel, char opera, std::string chain);
 	std::string toggleTopicRestriction(Channel *channel ,char opera, std::string chain);
 	std::string togglePasswordRestriction(std::vector<std::string> splited, Channel *channel, size_t &pos, char opera, int fd, std::string chain, std::string& arguments);
 	std::string signe_privilege(std::vector<std::string> splited, Channel *channel, size_t& pos, int fd, char opera, std::string chain, std::string& arguments);

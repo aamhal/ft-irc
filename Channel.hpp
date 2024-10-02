@@ -10,9 +10,9 @@ class Client;
 class Channel {
    private:
 
-	int invite;
+	bool invite;
+	bool key;
 	int topic;
-	int key;
 	int limit;
 	bool restriction_T;
 	std::string name;
@@ -29,9 +29,9 @@ public:
 	Channel(Channel const &src);
 	Channel &operator=(Channel const &src);
 	//---------------//Setters
-	void SetInvitOnly(int invite);
+	void setInvite(bool invite);
+	void SetKey(bool key);
 	void SetTopic(int topic);
-	void SetKey(int key);
 	void SetLimit(int limit);
 	void SetTopicName(std::string topic_name);
 	void SetPassword(std::string password);
@@ -41,7 +41,7 @@ public:
 	void setModeAtindex(size_t index, bool mode);
 	void set_createiontime();
 	//---------------//Getters
-	int GetInvitOnly();
+	int getInvite();
 	int GetTopic();
 	int GetKey();
 	int GetLimit();
