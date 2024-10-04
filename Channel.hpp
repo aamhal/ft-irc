@@ -30,7 +30,7 @@ public:
 	Channel &operator=(Channel const &src);
 	//---------------//Setters
 	void setInvite(bool invite);
-	void SetKey(bool key);
+	void SetKey(int key);
 	void SetTopic(int topic);
 	void SetLimit(int limit);
 	void SetTopicName(std::string topic_name);
@@ -59,6 +59,8 @@ public:
 	Client *get_client(int fd);
 	Client *get_admin(int fd);
 	Client *GetClientInChannel(std::string name);
+	bool Gettopic_restriction() const;
+
 	//---------------//Methods
 	void add_client(Client newClient);
 	void add_admin(Client newClient);

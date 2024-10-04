@@ -105,5 +105,14 @@ public:
 	bool		isLimitValid(std::string& limit);
 	std::string appendArg(std::string chain, char opera, char mode);
 	std::vector<std::string> splitParameters(std::string params);
-	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);	
+	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);
+	//------------topic
+	void TopicCommand(const std::string &command, int &clientFd);
+	int findColonPos(const std::string &command);
+	std::string extractTopic(const std::string &input);
+	std::string TopicTime();
+	//---------------//Kick
+	void	KICK(std::string cmd, int fd);
+	std::string Spilit_CMD_Kick(std::string command, std::vector<std::string> &temp, std::string &user, int fd);
+
 };

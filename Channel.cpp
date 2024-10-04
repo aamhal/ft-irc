@@ -39,6 +39,7 @@ void Channel::SetTime(std::string time){this->time_creation = time;}
 void Channel::SetLimit(int limit){this->limit = limit;}
 void Channel::SetTopicName(std::string topic_name){this->topic_name = topic_name;}
 void Channel::SetPassword(std::string password){this->password = password;}
+void Channel::SetKey(int key){this->key = key;}
 void Channel::SetName(std::string name){this->name = name;}
 void Channel::set_topicRestriction(bool value){this->restriction_T = value;}
 void Channel::setModeAtindex(size_t index, bool mode){M[index].second = mode;}
@@ -51,6 +52,7 @@ void Channel::set_createiontime(){
 //---------------//Setters
 //---------------//Getters
 int Channel::getInvite(){return this->invite;}
+int Channel::GetKey(){return this->key;}
 int Channel::GetTopic(){return this->topic;}
 int Channel::GetLimit(){return this->limit;}
 int Channel::GetNumberofclient(){return this->clients.size() + this->admins.size();}
@@ -134,6 +136,10 @@ void Channel::remove_client(int fd){
 			{clients.erase(it); break;}
 	}
 }
+
+	bool Channel::Gettopic_restriction() const{return this->restriction_T;}
+
+
 void Channel::remove_admin(int fd){
 	for (std::vector<Client>::iterator it = admins.begin(); it != admins.end(); ++it){
 		if (it->GetFd() == fd)
