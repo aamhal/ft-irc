@@ -105,5 +105,5 @@ public:
 	bool		isLimitValid(std::string& limit);
 	std::string appendArg(std::string chain, char opera, char mode);
 	std::vector<std::string> splitParameters(std::string params);
-	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);
+	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);	
 };
