@@ -86,7 +86,7 @@ void Server::TopicCommand(const std::string &command, int &clientFd)
 		topicCommandParts.push_back(commandParts[0]);
         topicCommandParts.push_back(commandParts[1]);
         topicCommandParts.push_back(command.substr(colonPosition));
-
+    
 	}
 
 	if (topicCommandParts[2] == ":") // RPL_NOTOPIC (331)
