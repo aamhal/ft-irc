@@ -261,6 +261,8 @@ if(cmd.empty())
 			mode(cmd, fd);
 		else if (splited_cmd.size() && (splited_cmd[0] == "INVITE" || splited_cmd[0] == "invite"))
 			Invite(cmd,fd);
+		else if (splited_cmd.size() && (splited_cmd[0] == "TOPIC" || splited_cmd[0] == "topic"))
+			TopicCommand(cmd,fd);
 		else if (splited_cmd.size())
 			_sendResponse(ERR_CMDNOTFOUND(GetClient(fd)->GetNickName(),splited_cmd[0]),fd);
 	}

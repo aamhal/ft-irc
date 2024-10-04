@@ -106,4 +106,10 @@ public:
 	std::string appendArg(std::string chain, char opera, char mode);
 	std::vector<std::string> splitParameters(std::string params);
 	void getCmdArgs(std::string cmd,std::string& name, std::string& modeset ,std::string &params);
+	//------------topic
+void TopicCommand(const std::string &command, int &clientFd);
+int findColonPos(const std::string &command);
+std::string extractTopic(const std::string &input);
+std::string TopicTime();
+
 };

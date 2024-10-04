@@ -134,6 +134,10 @@ void Channel::remove_client(int fd){
 			{clients.erase(it); break;}
 	}
 }
+
+	bool Channel::Gettopic_restriction() const{return this->restriction_T;}
+
+
 void Channel::remove_admin(int fd){
 	for (std::vector<Client>::iterator it = admins.begin(); it != admins.end(); ++it){
 		if (it->GetFd() == fd)

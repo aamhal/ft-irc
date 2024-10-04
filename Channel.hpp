@@ -59,6 +59,8 @@ public:
 	Client *get_client(int fd);
 	Client *get_admin(int fd);
 	Client *GetClientInChannel(std::string name);
+	bool Gettopic_restriction() const;
+
 	//---------------//Methods
 	void add_client(Client newClient);
 	void add_admin(Client newClient);
