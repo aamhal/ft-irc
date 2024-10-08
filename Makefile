@@ -2,7 +2,7 @@ NAME = ircserv
 CC = c++
 FLAGS = -Wall -Wextra -Werror -std=c++98
 
-SRCS = main.cpp Server.cpp Client.cpp authentication.cpp Channel.cpp Join.cpp Invite.cpp Mode.cpp Topic.cpp Kick.cpp
+SRCS = main.cpp Server.cpp Client.cpp authentication.cpp Channel.cpp Join.cpp Invite.cpp Mode.cpp Topic.cpp Kick.cpp Privatemsg.cpp
 
 
 OBJS = $(SRCS:.cpp=.o)

@@ -114,5 +114,9 @@ public:
 	//---------------//Kick
 	void	KICK(std::string cmd, int fd);
 	std::string Spilit_CMD_Kick(std::string command, std::vector<std::string> &temp, std::string &user, int fd);
+	//---------------//privatemsg
+	void PrivateMessage(std::string input, int fd);
+void ValidateRecipients(std::vector<std::string> &targets, int fd);
+void ExtractCommand(std::string input, std::string target, std::string &output) ;
 
 };

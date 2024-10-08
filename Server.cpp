@@ -265,6 +265,8 @@ if(cmd.empty())
 			TopicCommand(cmd,fd);
 		else if (splited_cmd.size() && (splited_cmd[0] == "KICK" || splited_cmd[0] == "kick"))
 			KICK(cmd,fd);
+		else if (splited_cmd.size() && (splited_cmd[0] == "PRVMSG" || splited_cmd[0] == "prvmsg"))
+			PrivateMessage(cmd,fd);
 		else if (splited_cmd.size())
 			_sendResponse(ERR_CMDNOTFOUND(GetClient(fd)->GetNickName(),splited_cmd[0]),fd);
 	}
