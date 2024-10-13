@@ -2,9 +2,9 @@
 #include "Client.hpp"
 #include "Replies.hpp"
 
-bool isPortValid(std::string my_port){
-	return (my_port.find_first_not_of("0123456789") == std::string::npos && \
-	std::atoi(my_port.c_str()) >= 1024 && std::atoi(my_port.c_str()) <= 65535);
+bool isPortValid(std::string port){
+	return (port.find_first_not_of("0123456789") == std::string::npos && \
+	std::atoi(port.c_str()) >= 1024 && std::atoi(port.c_str()) <= 65535);
 }
 
 int main(int ac, char **av)
@@ -16,8 +16,8 @@ int main(int ac, char **av)
 	std::cout << "---- SERVER ----" << std::endl;
 	try
 	{
-		signal(SIGINT, Server::SignalHandler);
-		signal(SIGQUIT, Server::SignalHandler);
+		signal(SIGINT, Server::serverSignals);
+		signal(SIGQUIT, Server::serverSignals);
 		signal(SIGPIPE, SIG_IGN);
 		if(!isPortValid(av[1]) || !*av[2] || std::strlen(av[2]) > 20)
 			{std::cout << "invalid Port number / Password!" << std::endl; return 1;}

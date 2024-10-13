@@ -1,4 +1,5 @@
 #include "Server.hpp"
+
 Server::Server(){this->server_fdsocket = -1;}
 Server::~Server(){}
 
@@ -19,7 +20,7 @@ Client *Server::GetClient(int fd){
 	return NULL;
 }
 int Server::GetPort(){
-	return this->my_port;
+	return this->port;
 }
 Client *Server::GetClientNick(std::string nickname){
 	for (size_t i = 0; i < this->clients.size(); i++){
@@ -48,7 +49,7 @@ void Server::addChannel(Channel newChannel){
 	this->channels.push_back(newChannel);
 }
 void Server::SetPort(int port){
-	this->my_port = port;
+	this->port = port;
 }
 void Server::addClient(Client newClient){
 	this->clients.push_back(newClient);
@@ -117,7 +118,7 @@ void	Server::close_fds(){
 	}
 }
 
-void Server::SignalHandler(int signum)
+void Server::serverSignals(int signum)
 {
 	(void)signum;
 	std::cout << std::endl << "Signal Received!" << std::endl;
@@ -129,7 +130,7 @@ bool Server::Signal = false;
 void Server::init(int port, std::string pass)
 {
 	this->password = pass;
-	this->my_port = port;
+	this->port = port;
 	this->serverSocket();
 
 	std::cout << GRE << "Server <" << server_fdsocket << "> Connected" << WHI << std::endl;
@@ -155,9 +156,9 @@ void Server::init(int port, std::string pass)
 void Server::serverSocket()
 {
 	int en = 1;
-	add.sin_family = AF_INET;
-	add.sin_addr.s_addr = INADDR_ANY;
-	add.sin_port = htons(my_port);
+	ser.sin_family = AF_INET;
+	ser.sin_addr.s_addr = INADDR_ANY;
+	ser.sin_port = htons(port);
 	server_fdsocket = socket(AF_INET, SOCK_STREAM, 0);
 	if(server_fdsocket == -1)
 		throw(std::runtime_error("faild to create socket"));
@@ -165,7 +166,7 @@ void Server::serverSocket()
 		throw(std::runtime_error("faild to set option (SO_REUSEADDR) on socket"));
 	 if (fcntl(server_fdsocket, F_SETFL, O_NONBLOCK) == -1)
 		throw(std::runtime_error("faild to set option (O_NONBLOCK) on socket"));
-	if (bind(server_fdsocket, (struct sockaddr *)&add, sizeof(add)) == -1)
+	if (bind(server_fdsocket, (struct sockaddr *)&ser, sizeof(ser)) == -1)
 		throw(std::runtime_error("faild to bind socket"));
 	if (listen(server_fdsocket, SOMAXCONN) == -1)
 		throw(std::runtime_error("listen() faild"));
@@ -226,16 +227,16 @@ void Server::reciveNewData(int fd)
 		cli->setBuffer(buff);
 		if(cli->getBuffer().find_first_of("\r\n") == std::string::npos)
 			return;
-		cmd = split_recivedBuffer(cli->getBuffer());
+		cmd = splitBuffer(cli->getBuffer());
 		for(size_t i = 0; i < cmd.size(); i++)
-			this->parseInput(cmd[i], fd);
+			this->Input(cmd[i], fd);
 		if(GetClient(fd))
 			GetClient(fd)->clearBuffer();
 	}
 }
 //---------------//Server Methods
 //---------------//Parsing Methods
-std::vector<std::string> Server::split_recivedBuffer(std::string str)
+std::vector<std::string> Server::splitBuffer(std::string str)
 {
 	std::vector<std::string> vec;
 	std::istringstream stm(str);
@@ -258,7 +259,7 @@ bool Server::notregistered(int fd)
 
 
 
-void Server::parseInput(std::string &cmd, int fd)
+void Server::Input(std::string &cmd, int fd)
 {
 if(cmd.empty())
 		return ;

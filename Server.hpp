@@ -35,11 +35,11 @@ private:
 	int server_fdsocket;
 	std::vector<Channel> channels;
 	struct sockaddr_in cliadd;
-	struct sockaddr_in add;
+	struct sockaddr_in ser;
 	struct pollfd new_cli;
 	std::vector<struct pollfd> fds;
 	std::vector<Client> clients;
-	int my_port;
+	int port;
 	std::string password;
 	static bool Signal;
 public:
@@ -70,7 +70,7 @@ public:
 	void senderror(int code, std::string clientname, std::string channelname, int fd, std::string msg);
 	void 		_sendResponse(std::string response, int fd);
 	//---------------//Close and Signal Methods
-	static void SignalHandler(int signum);
+	static void serverSignals(int signum);
 	void close_fds();
 	//---------------//Server Methods
 	void init(int port, std::string pass);
@@ -78,9 +78,9 @@ public:
 	void reciveNewData(int fd);
 	void newClient();
 	//---------------//Parsing Methods
-	void parseInput(std::string &cmd, int fd);
+	void Input(std::string &cmd, int fd);
 	std::vector<std::string> splitInputCommand(std::string &str);
-	std::vector<std::string> split_recivedBuffer(std::string str);
+	std::vector<std::string> splitBuffer(std::string str);
 	//---------------//Authentification Methods
 	void authenticateClient(int fd, std::string pass);
 	bool isNicknameValid(std::string& nickname);
