@@ -60,25 +60,60 @@ std::string Server::GetPassword(){
 //---------------//Setters
 //---------------//Remove Methods
 void Server::RemoveChannel(std::string name){
-	for (size_t i = 0; i < this->channels.size(); i++){
+	for (size_t i = 0; i < this->channels.size(); i++)
+	{
 		if (this->channels[i].GetName() == name)
-			{this->channels.erase(this->channels.begin() + i); return;}
+		{
+			this->channels.erase(this->channels.begin() + i); 
+			return;
+		}
 	}
 }
 void Server::RemoveClient(int fd){
-	for (size_t i = 0; i < this->clients.size(); i++){
+	for (size_t i = 0; i < this->clients.size(); i++)
+	{
 		if (this->clients[i].GetFd() == fd)
-			{this->clients.erase(this->clients.begin() + i); return;}
+		{
+			this->clients.erase(this->clients.begin() + i); 
+			return;
+		}
 	}
 }
 
 void Server::RemoveFds(int fd){
-	for (size_t i = 0; i < this->fds.size(); i++){
-		if (this->fds[i].fd == fd)
-			{this->fds.erase(this->fds.begin() + i); return;}
+	for (size_t i = 0; i < this->fds.size(); i++)
+	{
+	if (this->fds[i].fd == fd)
+	{
+		this->fds.erase(this->fds.begin() + i); 
+		return;
+	}
 	}
 }
-
+void	Server::RemoveclientfromChannels(int fd){
+	for (size_t i = 0; i < this->channels.size(); i++)
+	{
+		int f = 0;
+		if (channels[i].get_client(fd))
+		{
+			channels[i].remove_client(fd); f = 1;
+		}
+		else if (channels[i].get_admin(fd))
+		{
+			channels[i].remove_admin(fd); f = 1;
+		}
+		if (channels[i].GetNumberofclient() == 0)
+		{
+			channels.erase(channels.begin() + i); 
+			i--; 
+			continue;
+		}
+		if (f){
+			std::string rpl = ":" + GetClient(fd)->GetNickName() + "!~" + GetClient(fd)->GetUserName() + "@localhost QUIT Quit\r\n";
+			channels[i].sendTo_all(rpl);
+		}
+	}
+}
 //---------------//Remove Methods
 //---------------//Send Methods
 void Server::_sendResponse(std::string response, int fd)
@@ -158,7 +193,7 @@ void Server::serverSocket()
 	int en = 1;
 	ser.sin_family = AF_INET;
 	ser.sin_addr.s_addr = INADDR_ANY;
-	ser.sin_port = htons(port);
+	ser.sin_port = htons(port);//convert the port to network byte order (big endian)
 	server_fdsocket = socket(AF_INET, SOCK_STREAM, 0);
 	if(server_fdsocket == -1)
 		throw(std::runtime_error("faild to create socket"));
@@ -218,6 +253,7 @@ void Server::reciveNewData(int fd)
 	if(bytes <= 0)
 	{
 		std::cout << RED << "Client <" << fd << "> Disconnected" << WHI << std::endl;
+		RemoveclientfromChannels(fd);
 		RemoveClient(fd);
 		RemoveFds(fd);
 		close(fd);

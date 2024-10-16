@@ -63,6 +63,7 @@ public:
 	void setPassword(std::string password);
 	//---------------//Remove Methods
 	void RemoveFds(int fd);
+	void RemoveclientfromChannels(int fd);
 	void RemoveClient(int fd);
 	void RemoveChannel(std::string name);
 	//---------------//Send Methods
