@@ -288,7 +288,7 @@ std::vector<std::string> Server::splitBuffer(std::string str)
 }
 bool Server::notregistered(int fd)
 {
-	if (!GetClient(fd) || GetClient(fd)->GetNickName().empty() || GetClient(fd)->GetUserName().empty() || GetClient(fd)->GetNickName() == "*"  || !GetClient(fd)->GetLogedIn())
+	if (!GetClient(fd) || GetClient(fd)->GetNickName().empty() || GetClient(fd)->GetUserName().empty() || GetClient(fd)->GetNickName() == "*" ) //|| !GetClient(fd)->GetLogedIn()
 		return false;
 	return true;
 }

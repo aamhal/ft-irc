@@ -9,7 +9,7 @@ Client::Client()
 	this->registered = false;
 	this->buffer = "";
 	this->ipadd = "";
-	this->logedin = false;
+	// this->logedin = false;
 }
 Client::Client(std::string nickname, std::string username, int fd) :fd(fd), nickname(nickname), username(username){}
 Client::~Client(){}
@@ -36,7 +36,7 @@ std::string Client::getHostname(){
 //---------------//Setters
 void Client::SetFd(int fd){this->fd = fd;}
 void Client::SetNickname(std::string& nickName){this->nickname = nickName;}
-void Client::setLogedin(bool value){this->logedin = value;}
+// void Client::setLogedin(bool value){this->in = value;}
 void Client::SetUsername(std::string& username){this->username = username;}
 void Client::setBuffer(std::string recived){buffer += recived;}
 void Client::setRegistered(bool value){registered = value;}
@@ -44,7 +44,7 @@ void Client::setIpAdd(std::string ipadd){this->ipadd = ipadd;}
 //---------------//Setters
 //---------------//Methods
 void Client::clearBuffer(){buffer.clear();}
-bool Client::GetLogedIn(){return this->logedin;}
+// bool Client::GetLogedIn(){return this->logedin;}
 void Client::AddChannelInvite(std::string &chname){
 	ChannelsInvite.push_back(chname);
 }

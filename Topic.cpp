@@ -73,7 +73,6 @@ void Server::TopicCommand(const std::string &command, int &clientFd)
 	// Handle topic setting
 	std::vector<std::string> topicCommandParts;
 	int colonPosition = findColonPos(command);
-
 	if (colonPosition == -1 || commandParts[2][0] != ':')
 	{
 		topicCommandParts.push_back(commandParts[0]);
@@ -104,7 +103,9 @@ void Server::TopicCommand(const std::string &command, int &clientFd)
 	}
 
 	// Update topic and notify the channel
-	std::string newTopic = topicCommandParts[2].substr(1);
+	std::string newTopic = topicCommandParts[2];
+	if (newTopic[0] == ':')
+		newTopic = newTopic.substr(1);
 	channel->SetTime(TopicTime());
 	channel->SetTopicName(newTopic);
 

@@ -10,7 +10,7 @@ private:
 	bool isOperator;
 	bool registered;
 	std::string nickname;
-	bool logedin;
+	// bool logedin;
 	std::string username;
 	std::string buffer;
 	std::string ipadd;
@@ -24,7 +24,7 @@ public:
 	bool getRegistered();
 	bool GetInviteChannel(std::string &ChName);
 	std::string GetNickName();
-	bool 		GetLogedIn();
+	// bool 		GetLogedIn();
 	std::string GetUserName();
 	std::string getIpAdd();
 	std::string getBuffer();
@@ -32,7 +32,7 @@ public:
 	//---------------//Setters
 	void SetFd(int fd);
 	void SetNickname(std::string& nickName);
-	void setLogedin(bool value);
+	// void setLogedin(bool value);
 	void SetUsername(std::string& username);
 	void setBuffer(std::string recived);
 	void setRegistered(bool value);

@@ -83,11 +83,16 @@ void Server::assignNickname(int clientFd, std::string command)
 		{
 			std::string previousNick = client->GetNickName();
 			client->SetNickname(command);
+			for(size_t i = 0; i < channels.size(); i++){
+      	  Client *cl = channels[i].GetClientInChannel(previousNick);
+       	 if(cl)
+        	  cl->SetNickname(command);
+      }
 			if(!previousNick.empty() && previousNick != command)
 			{
 				if(previousNick == "*" && !client->GetUserName().empty())
 				{
-					client->setLogedin(true);
+					// client->setLogedin(true);
 					_sendResponse(RPL_CONNECTED(client->GetNickName()), clientFd);
 					_sendResponse(RPL_NICKCHANGE(client->GetNickName(), command), clientFd);
 				}
@@ -100,9 +105,9 @@ void Server::assignNickname(int clientFd, std::string command)
 		else if (client && !client->getRegistered())
 			_sendResponse(ERR_NOTREGISTERED(command), clientFd);
 	}
-	if(client && client->getRegistered() && !client->GetUserName().empty() && !client->GetNickName().empty() && client->GetNickName() != "*" && !client->GetLogedIn())
+	if(client && client->getRegistered() && !client->GetUserName().empty() && !client->GetNickName().empty() && client->GetNickName() != "*" ) //&& !client->GetIn()
 	{
-		client->setLogedin(true);
+		// client->setLogedin(true);
 		_sendResponse(RPL_CONNECTED(client->GetNickName()), clientFd);
 	}
 }
@@ -120,9 +125,9 @@ void	Server::assignUsername(std::string& command, int clientFd)
 		{_sendResponse(ERR_ALREADYREGISTERED(client->GetNickName()), clientFd); return;}
 	else
 		client->SetUsername(commandParts[1]);
-	if(client && client->getRegistered() && !client->GetUserName().empty() && !client->GetNickName().empty() && client->GetNickName() != "*"  && !client->GetLogedIn())
+	if(client && client->getRegistered() && !client->GetUserName().empty() && !client->GetNickName().empty() && client->GetNickName() != "*"  ) //&& !client->GetLogedIn()
 	{
-		client->setLogedin(true);
+		// client->setLogedin(true);
 		_sendResponse(RPL_CONNECTED(client->GetNickName()), clientFd);
 	}
 }
