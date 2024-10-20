@@ -1,7 +1,15 @@
-pass 1234
-user a a a a
+pass 123
 nick a
+user a a a a
 
-join #a
 
-mode #a +k :aaa 1123
+
+join #f1
+mode #f1 +i
+invite b #f1
+invite b #f1
+invite b #f1
+invite b #f1
+invite b #f1
+invite b #f1
+kick 

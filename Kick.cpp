@@ -25,8 +25,8 @@ std::string Split_CMDFR(std::string &command, std::vector<std::string> &temp)
 {
 	std::string s, r;
 	std::stringstream stringst(command);
-	int count = 3;
-	while (stringst >> s && count--)
+	int c = 3;
+	while (stringst >> s && c--)
 		temp.push_back(s);
 	if(temp.size() != 3)
         return std::string("");

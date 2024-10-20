@@ -84,10 +84,10 @@ void Server::assignNickname(int clientFd, std::string command)
 			std::string previousNick = client->GetNickName();
 			client->SetNickname(command);
 			for(size_t i = 0; i < channels.size(); i++){
-      	  Client *cl = channels[i].GetClientInChannel(previousNick);
-       	 if(cl)
+      	 	 Client *cl = channels[i].GetClientInChannel(previousNick);
+       		 if(cl)
         	  cl->SetNickname(command);
-      }
+      		}
 			if(!previousNick.empty() && previousNick != command)
 			{
 				if(previousNick == "*" && !client->GetUserName().empty())

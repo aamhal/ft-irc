@@ -46,6 +46,11 @@ void Client::setIpAdd(std::string ipadd){this->ipadd = ipadd;}
 void Client::clearBuffer(){buffer.clear();}
 // bool Client::GetLogedIn(){return this->logedin;}
 void Client::AddChannelInvite(std::string &chname){
+	for (size_t i = 0; i < ChannelsInvite.size(); i++)
+	{
+		if (this->ChannelsInvite[i] == chname)
+			return;
+	}
 	ChannelsInvite.push_back(chname);
 }
 void Client::RmChannelInvite(std::string &chname){
