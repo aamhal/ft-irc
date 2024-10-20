@@ -19,12 +19,18 @@ std::string Server::appendArg(std::string modeChain, char sign, char mode)
 
 void Server::getCmdArgs(std::string cmd, std::string& name, std::string& modeSet, std::string& parameters)
 {
+
 	std::istringstream stm(cmd);
 	stm >> name;
 	stm >> modeSet;
-	size_t found = cmd.find_first_not_of(name + modeSet + " \t\v");
-	if(found != std::string::npos)
-		parameters = cmd.substr(found);
+ 	std::string::size_type pos = cmd.find(':');
+    
+    if (pos != std::string::npos)
+    {
+        parameters = cmd.substr(pos + 1);
+    }
+    else
+        stm >> parameters;
 }
 
 std::vector<std::string> Server::splitParameters(std::string parameters)

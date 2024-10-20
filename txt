@@ -1,0 +1,7 @@
+pass 1234
+user a a a a
+nick a
+
+join #a
+
+mode #a +k :aaa 1123
