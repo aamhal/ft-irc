@@ -5,7 +5,7 @@ Channel::Channel(){
 	this->invite = 0;
 	this->topic = 0;
 	this->limit = 0;
-	this->restriction_T = false;
+	this->restriction_T = true;
 	this->name = "";
 	this->topic_name = "";
 	char charaters[5] = {'i', 't', 'k', 'o', 'l'};

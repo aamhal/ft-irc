@@ -92,7 +92,6 @@ void Server::assignNickname(int clientFd, std::string command)
 			{
 				if(previousNick == "*" && !client->GetUserName().empty())
 				{
-					// client->setLogedin(true);
 					_sendResponse(RPL_CONNECTED(client->GetNickName()), clientFd);
 					_sendResponse(RPL_NICKCHANGE(client->GetNickName(), command), clientFd);
 				}
@@ -105,9 +104,9 @@ void Server::assignNickname(int clientFd, std::string command)
 		else if (client && !client->getRegistered())
 			_sendResponse(ERR_NOTREGISTERED(command), clientFd);
 	}
-	if(client && client->getRegistered() && !client->GetUserName().empty() && !client->GetNickName().empty() && client->GetNickName() != "*" ) //&& !client->GetIn()
+	if(client && client->getRegistered() && !client->GetUserName().empty() && !client->GetNickName().empty() && client->GetNickName() != "*" ) 
 	{
-		// client->setLogedin(true);
+		
 		_sendResponse(RPL_CONNECTED(client->GetNickName()), clientFd);
 	}
 }
@@ -127,7 +126,7 @@ void	Server::assignUsername(std::string& command, int clientFd)
 		client->SetUsername(commandParts[1]);
 	if(client && client->getRegistered() && !client->GetUserName().empty() && !client->GetNickName().empty() && client->GetNickName() != "*"  ) //&& !client->GetLogedIn()
 	{
-		// client->setLogedin(true);
+		
 		_sendResponse(RPL_CONNECTED(client->GetNickName()), clientFd);
 	}
 }
